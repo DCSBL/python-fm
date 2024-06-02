@@ -1,0 +1,117 @@
+[tool.poetry]
+name = "python-fm"
+version = "0.0.0"
+description = "Asynchronous Python client for Flitsmeister"
+authors = ["DCSBL"]
+maintainers = ["DCSBL"]
+license = "Apache License 2.0"
+readme = "README.md"
+homepage = "https://github.com/DCSBL/python-flitsmeister"
+repository = "https://github.com/DCSBL/python-flitsmeister"
+documentation = "https://github.com/DCSBL/python-flitsmeister"
+classifiers = [
+]
+packages = [
+    { include = "flitsmeister" },
+]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+aiohttp = ">=3.0.0"
+async-timeout = "^4.0.3"
+pyjwt = "^2.8.0"
+
+[tool.poetry.dev-dependencies]
+aresponses = "^3.0.0"
+black = "^24.4"
+blacken-docs = "^1.16.0"
+flake8 = "^4.0.1"
+flake8-docstrings = "^1.7.0"
+isort = "^5.13.2"
+pre-commit = "^3.6.0"
+pre-commit-hooks = "^4.5.0"
+pylint = "^3.1.0"
+pytest = "^7.4.4"
+pytest-asyncio = "^0.23.6"
+pytest-cov = "^4.1.0"
+yamllint = "^1.33.0"
+pyupgrade = "^3.15.2"
+flake8-simplify = "^0.21.0"
+vulture = "^2.11"
+flake8-bandit = "^3.0.0"
+flake8-bugbear = "^23.3.12"
+flake8-builtins = "^2.2.0"
+flake8-comprehensions = "^3.14.0"
+flake8-eradicate = "^1.2.1"
+flake8-markdown = "^0.3.0"
+darglint = "^1.8.1"
+safety = "^3.0.1"
+codespell = "^2.2.6"
+bandit = "^1.7.7"
+syrupy = "^4.6.0"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/DCSBL/python-flitsmeister/issues"
+Changelog = "https://github.com/DCSBL/python-flitsmeister/releases"
+
+[tool.black]
+target-version = ['py39']
+
+[tool.coverage.paths]
+source = ["flitsmeister"]
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = ["pragma: no cover", "if TYPE_CHECKING:"]
+
+[tool.coverage.run]
+branch = true
+source = ["flitsmeister"]
+
+[tool.isort]
+profile = "black"
+multi_line_output = 3
+
+[tool.pylint.BASIC]
+good-names = [
+    "_",
+    "ex",
+    "fp",
+    "i",
+    "id",
+    "j",
+    "k",
+    "on",
+    "Run",
+    "T",
+]
+
+[tool.pylint."MESSAGES CONTROL"]
+disable= [
+    "too-few-public-methods",
+    "duplicate-code",
+    "format",
+    "unsubscriptable-object",
+    "too-many-instance-attributes",
+]
+
+[tool.pylint.SIMILARITIES]
+ignore-imports = true
+
+[tool.pylint.FORMAT]
+max-line-length=120
+
+[tool.pylint.DESIGN]
+max-attributes=20
+
+[tool.pytest.ini_options]
+addopts = "--cov"
+
+[tool.vulture]
+min_confidence = 80
+paths = ["flitsmeister"]
+verbose = true
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
