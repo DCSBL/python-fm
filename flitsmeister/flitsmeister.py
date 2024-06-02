@@ -22,6 +22,10 @@ class NotauthenticatedException(Exception):
     """Not authenticated exception."""
 
 
+class RequestExeption(Exception):
+    """Failed to make a request."""
+
+
 class FM:
     """Implementation of Flitsmeister."""
 
@@ -215,6 +219,11 @@ class FM:
                 headers=headers,
             )
             _LOGGER.debug("%s, %s", resp.status, await resp.text("utf-8"))
+
+        if resp.status != 200:
+            raise RequestExeption(
+                f"Failed to make a request: {resp.status} / {await resp.text()}"
+            )
 
         content_type = resp.headers.get("Content-Type", "")
         if "application/json" in content_type:
