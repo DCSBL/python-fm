@@ -19,13 +19,13 @@ from flitsmeister import FM
 from flitsmeister.models import Auth
 
 async def main():
-    
+
     async with FM() as api:
         auth = await api.login(USERNAME, PASSWORD)
-        
+
     # - Persist auth in a file or database
     # - Create a new auth object from the persisted data
-    
+
     auth = Auth(session_token=SESSION_TOKEN, access_token=ACCESS_TOKEN)
     async with FM(auth=auth) as api:
         print(await api.user())

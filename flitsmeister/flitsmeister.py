@@ -2,23 +2,24 @@
 
 from __future__ import annotations
 
-import asyncio
 import logging
-from collections.abc import Callable, Coroutine
-from http import HTTPStatus
 from typing import Any, TypeVar
 
 import async_timeout
-from aiohttp.client import ClientError, ClientResponseError, ClientSession
-from aiohttp.hdrs import METH_GET, METH_PUT, METH_POST
+from aiohttp.client import ClientSession
+from aiohttp.hdrs import METH_GET, METH_POST
 
-from .models import Auth, User, Statistics
+from .models import Auth, Statistics, User
 
 _LOGGER = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+ENDPOINT = "https://account.flitsmeister.app/"
 
+
+class NotauthenticatedException(Exception):
+    """Not authenticated exception."""
 
 
 class FM:
@@ -27,14 +28,14 @@ class FM:
     _session: ClientSession | None
     _close_session: bool = False
     _request_timeout: int = 10
-    
+
     _auth: Auth | None = None
 
     def __init__(
-        self, 
-        client_session: ClientSession = None, 
+        self,
+        client_session: ClientSession = None,
         request_timeout: int = 10,
-        auth : Auth | None = None
+        auth: Auth | None = None,
     ):
         """Create a FM object.
 
@@ -47,11 +48,10 @@ class FM:
         self._session = client_session
         self._request_timeout = request_timeout
         self._auth = auth
-        
-        
+
     async def login(self, username: str, password: str) -> Auth:
         """Login to the API.
-        
+
         https://account.flitsmeister.app/parse/login { "_method": "GET", "password": "<password>", "username": "<email>"}
         {
             "objectId": "1EqBUC03nK",
@@ -60,14 +60,17 @@ class FM:
             (And a lot more -for now irrelevant- data)
         }
         """
-        
-        URL = "https://account.flitsmeister.app/parse/login"
-        response = await self._request(URL, METH_POST, {"_method": "GET", "username": username, "password": password})
+
+        response = await self._request(
+            "parse/login",
+            METH_POST,
+            {"_method": "GET", "username": username, "password": password},
+        )
         return Auth.from_dict(response)
-    
+
     async def user(self) -> User:
         """Get user information.
-        
+
         https://account.flitsmeister.app/parse/classes/_User/<USER_ID>
         {
             "4411EvEnabled": false,
@@ -130,20 +133,20 @@ class FM:
             "validated": true,
             "vehicleType": 1
         }
-        
+
         """
-        
+
         if self._auth is None:
-            raise Exception("Not authenticated")
-        
-        
-        URL = f"https://account.flitsmeister.app/parse/classes/_User/{self._auth.object_id}"
-        response = await self._request(URL, METH_GET, {})
+            raise NotauthenticatedException
+
+        response = await self._request(
+            f"parse/classes/_User/{self._auth.object_id}", METH_GET, {}
+        )
         return User.from_dict(response)
-    
+
     async def statistics(self) -> Statistics:
         """Get user statistics.
-        
+
         https://account.flitsmeister.app/parse/functions/fetchStatistics
         {
             "result": {
@@ -182,17 +185,15 @@ class FM:
             }
         }
         """
-        
+
         if self._auth is None:
-            raise Exception("Not authenticated")
-        
-        URL = "https://account.flitsmeister.app/parse/functions/fetchStatistics"
-        response = await self._request(URL, METH_POST, {})
+            raise NotauthenticatedException
+
+        response = await self._request("parse/functions/fetchStatistics", METH_POST, {})
         return Statistics.from_dict(response)
-        
-    
+
     async def _request(
-        self, url: str, method: str = METH_GET, data: object = None
+        self, path: str, method: str = METH_GET, data: object = None
     ) -> Any:
         """Make a request to the API."""
         if self._session is None:
@@ -200,10 +201,10 @@ class FM:
             self._close_session = True
 
         headers = {"Content-Type": "application/json"}
-        
-        if (self._auth is not None):
+        if self._auth is not None:
             headers["x-parse-session-token"] = self._auth.session_token
 
+        url = f"{ENDPOINT}{path}"
         _LOGGER.debug("%s, %s, %s", method, url, data)
 
         async with async_timeout.timeout(self._request_timeout):

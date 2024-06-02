@@ -5,29 +5,32 @@ from __future__ import annotations
 from contextlib import suppress
 from dataclasses import dataclass
 from datetime import datetime
-from enum import Enum
 from typing import Any
 
 import jwt
 
+
 @dataclass
 class Auth:
-    """Represent Auth data."""    
+    """Represent Auth data."""
+
     object_id: str
     session_token: str
     access_token: str
-    
+
     access_token_expires: datetime
-    
+
     def __init__(self, session_token: str, access_token: str):
         self.session_token = session_token
         self.access_token = access_token
-        
+
         with suppress(jwt.ExpiredSignatureError):
-            decoded_jwt = jwt.decode(self.access_token, options={"verify_signature": False})
+            decoded_jwt = jwt.decode(
+                self.access_token, options={"verify_signature": False}
+            )
             self.object_id = decoded_jwt.get("sub")
             self.access_token_expires = datetime.fromtimestamp(decoded_jwt.get("exp"))
-    
+
     @property
     def is_access_token_expired(self) -> bool:
         """Check if the access token is expired."""
@@ -36,11 +39,12 @@ class Auth:
     @staticmethod
     def from_dict(data: dict[str, str]) -> Auth:
         """TODO"""
-        
+
         return Auth(
             session_token=data.get("sessionToken"),
             access_token=data.get("accessToken"),
         )
+
 
 @dataclass
 class User:
@@ -62,7 +66,7 @@ class User:
     statistics_travel_time: int
     username: str
     vehicle_type: int
-    
+
     @staticmethod
     def from_dict(data: dict[str, Any]) -> User:
         """TODO"""
@@ -84,11 +88,12 @@ class User:
             username=data.get("username"),
             vehicle_type=data.get("vehicleType"),
         )
-    
+
+
 @dataclass
 class Statistics:
     """Represent Statistics data."""
-    
+
     ambassador: bool
     countries_visited: list[str]
     fines_avoided: int
@@ -103,7 +108,7 @@ class Statistics:
     top_consecutive_days: int
     top_speed: int
     total_ratings: int
-    
+
     @staticmethod
     def from_dict(data: dict[str, int]) -> Statistics:
         """TODO"""
