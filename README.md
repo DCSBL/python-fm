@@ -1,7 +1,9 @@
-# FM: `python-fm`
+# Flitsmeister: `python-fm`
 
 Asyncio package to communicate with Flitsmeister
 This package is aimed to get basic information about your Flitsmeister account.
+
+**❗This is an _unofficial_ repo and is not created, maintained or in any sense linked to Flitsmeister. Use at your own risk!**
 
 
 # Usage
@@ -37,6 +39,8 @@ if __name__ == "__main__":
 
 # Development and contribution
 Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+
+Feel free to take a look a the open issues if you like to contribute.
 
 ## Requirements
 - Python 3.9 or higher
